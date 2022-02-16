@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,40 +13,71 @@ namespace ByteBank
         {
             try
             {
-                ContaCorrente conta = new ContaCorrente(456, 4578420);
-                ContaCorrente conta2 = new ContaCorrente(485, 456478);
-
-                conta2.Transferir(10000, conta);
-
-                conta.Depositar(50);
-                Console.WriteLine(conta.Saldo);
-                conta.Sacar(-500);
+                CarregarContas();
             }
-            catch (ArgumentException ex)
+            catch (Exception)
             {
-                Console.WriteLine("Argumento com problema: " + ex.ParamName);
-                Console.WriteLine("Ocorreu uma exceção do tipo ArgumentException.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("CATCH NO MÉTODO MAIN.");
             }
-            catch (SaldoInsuficienteException ex)
-            {
-                Console.WriteLine(ex.Saldo);
-                Console.WriteLine(ex.ValorSaque);
-
-                Console.WriteLine(ex.StackTrace);
-
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Exceção do tipo SaldoInsuficienteException");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            // Metodo();
 
             Console.WriteLine("Execução finalizada. Tecle Enter para sair...");
             Console.ReadLine();
+        }
+
+        private static void CarregarContas()
+        {
+            using(LeitorDeArquivo leitor = new LeitorDeArquivo("teste.txt"))
+            {
+                leitor.LerProximaLinha();
+            }
+
+            // O código acima é uma maneira mais simples de executar o código abaixo.
+
+            // ------------------------------------------------------------------------------------------
+
+            //LeitorDeArquivo leitor = null;
+            //try // Pode não ter um catch se tiver o finally
+            //{
+            //    leitor = new LeitorDeArquivo("contas.txt");
+
+            //    leitor.LerProximaLinha();
+            //    leitor.LerProximaLinha();
+            //    leitor.LerProximaLinha();
+            //}
+            //catch (IOException)
+            //{
+            //    Console.WriteLine("Exceção do tipo IOException capturada e tratada!");
+            //}
+            //finally // É sempre executado, seja depois do try ou depois do catch.
+            //{
+            //    Console.WriteLine("Executando o finally.");
+            //    if (leitor != null)
+            //    {
+            //        leitor.Fechar();
+            //    }
+            //}
+        }
+
+        private static void TestaInnerException()
+        {
+            try
+            {
+                ContaCorrente conta1 = new ContaCorrente(4564, 789684);
+                ContaCorrente conta2 = new ContaCorrente(7891, 456794);
+
+                // conta1.Transferir(10000, conta2);
+                conta1.Sacar(10000);
+            }
+            catch (OperacaoFinanceiraException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+
+                // Console.WriteLine("Informações da INNER EXCEPTION (exceção interna): ");
+
+                // Console.WriteLine(e.InnerException.Message);
+                // Console.WriteLine(e.InnerException.StackTrace);
+            }
         }
 
         private static void Metodo()
